@@ -14,7 +14,7 @@ logger = logging.getLogger('startup')
 
 async def main() -> None:
     logger.info('Starting the bot')
-    setup_logging()
+    setup_logging(level=config.log_level)
     bot = Bot(config.bot_token, parse_mode=ParseMode.HTML)
     dp.include_routers(
         intro_router
