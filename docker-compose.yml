@@ -1,0 +1,22 @@
+services:
+    database:
+        restart: always
+        image: "postgres:13-alpine"
+
+        environment:
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_NAME}
+
+        ports:
+            - ${DB_PORT}:5432
+
+        volumes:
+            - ${POSTGRES_DATA_VOLUME}:/var/lib/postgresql/data
+
+        networks:
+            - local_net
+
+
+networks:
+    local_net:
