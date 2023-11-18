@@ -1,4 +1,5 @@
 from sqlalchemy import String, BigInteger
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from models.core import Base, TimestampMixin
@@ -14,4 +15,4 @@ class User(Base, TimestampMixin):
     chat_id: Mapped[int] = mapped_column(
         BigInteger(), index=True, unique=True
     )  # у telegram года так с 22го для id пользователей используется int64
-
+    about: Mapped[dict | None] = mapped_column(JSONB())

@@ -1,10 +1,11 @@
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.errors import ObjectNotExists
 from models import User
-from schemas.user import UserInit, UserShort
+from schemas.user import UserInit, UserShort, UserAbout
 from utils.utils import to_snake
 
 
@@ -37,6 +38,28 @@ class UserRepository:
         obj = UserShort.model_validate(fetched)
         self.logger.info(f'found by chat_id: {chat_id} - {obj}')
         return obj
+
+    async def get_user_by_id(self, session: AsyncSession, user_id: int) -> UserShort | None:
+        self.logger.debug(f'fetching user with id: {user_id}')
+        fetched = await session.get(User, user_id)
+        if not fetched:
+            self.logger.debug(f'user not found by id: {user_id}')
+            return None
+
+        obj = UserShort.model_validate(fetched)
+        self.logger.info(f'found by id: {user_id} - {obj}')
+        return obj
+
+    async def fill_about(self, session: AsyncSession, user_id: int, about: UserAbout):
+        user = await self.get_user_by_id(session, user_id)
+        if not user:
+            raise ObjectNotExists(identity=user, entity=User.__name__)
+
+        await session.execute(
+            update(User)
+            .where(User.id == user_id)
+            .values(about=about.model_dump(mode='json'))
+        )
 
 
 user_repository = UserRepository()  # в случае с нормальным DI, этот объект бы создавался через него в отдельном месте, а не тут

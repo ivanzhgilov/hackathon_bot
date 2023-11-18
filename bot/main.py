@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Bot
 from aiogram.enums import ParseMode
+from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
 from app import dp
 from commands.intro import intro_router
@@ -19,6 +20,7 @@ async def main() -> None:
     dp.include_routers(
         intro_router
     )
+    dp.callback_query.middleware(CallbackAnswerMiddleware())
     await dp.start_polling(bot)
 
 

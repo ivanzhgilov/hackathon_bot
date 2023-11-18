@@ -1,3 +1,4 @@
+from core.constants import UserRole
 from schemas.core import Model, IdMixin
 
 
@@ -8,5 +9,11 @@ class UserInit(Model):
     surname: str | None
 
 
+class UserAbout(Model):
+    role: UserRole
+    about: str
+    target: str
+
+
 class UserShort(UserInit, IdMixin):
-    pass
+    about: UserAbout | None
