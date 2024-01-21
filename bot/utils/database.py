@@ -28,10 +28,16 @@ def async_session_factory(
     params.update(engine_params)
 
     engine = create_async_engine(async_connection_string, **params)
+
     # noinspection PyTypeChecker
     maker = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 
     async def get_async_session() -> AsyncSession:
+        from models.user import User
+        from models.core import Base
+
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
         try:
             sess: AsyncSession = maker()
             yield sess

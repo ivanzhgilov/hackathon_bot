@@ -29,6 +29,11 @@ class FillAboutForm(StatesGroup):
 
 class IntroActionKinds(str, enum.Enum):
     confirm = 'confirm'
+    points_of_city = 'points_of_city'
+    eco_lesson = 'eco_lesson'
+    recycling_tips = 'recycling_tips'
+    eco_piggy_bank = 'eco_piggy_bank'
+    usefull_links = 'useful_links'
 
 
 class IntroAction(CallbackData, prefix='intr'):
@@ -49,15 +54,20 @@ async def start(message: Message, state: FSMContext):
         )
 
         stat = await statistic_service.active_statistic(session)
-
         await message.answer(intro_dialogs['start']['hello'])
         builder = InlineKeyboardBuilder()
-        builder.button(text=intro_dialogs['start']['confirm_button'], callback_data=IntroAction(action='confirm'))
+        builder.button(text=intro_dialogs['start']['points_of_city_button'],
+                       callback_data=IntroAction(action='points_of_city'))
+        builder.button(text=intro_dialogs['start']['recycling_tips_button'],
+                       callback_data=IntroAction(action='recycling_tips'))
+        builder.button(text=intro_dialogs['start']['eco_lesson_button'], callback_data=IntroAction(action='eco_lesson'))
+        builder.button(text=intro_dialogs['start']['eco_piggy_bank_button'],
+                       callback_data=IntroAction(action='eco_piggy_bank'))
+        builder.button(text=intro_dialogs['start']['useful_links_button'],
+                       callback_data=IntroAction(action='useful_links'))
+        builder.adjust(1, 1, 3)
         await message.answer(
-            intro_dialogs['start']['usage_statistic'].format(
-                active_users=stat.active_users,
-                active_commands=stat.active_commands
-            ),
+            intro_dialogs['start']['usage_statistic'],
 
             reply_markup=builder.as_markup()
 

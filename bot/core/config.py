@@ -18,7 +18,7 @@ parse_settings = SettingsConfigDict(
 class DbConfig(BaseSettings):
     model_config = parse_settings
 
-    db_host:str = Field()
+    db_host: str = Field()
     db_name: str = Field()
     db_port: int = Field()
     db_user: str = Field()
