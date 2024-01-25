@@ -7,6 +7,7 @@ from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
 from app import dp
 from commands.intro import intro_router
+from commands.points_of_my_city import points_of_city_router
 from core.config import config
 from utils.utils import setup_logging
 
@@ -18,7 +19,8 @@ async def main() -> None:
     setup_logging(level=config.log_level)
     bot = Bot(config.bot_token, parse_mode=ParseMode.HTML)
     dp.include_routers(
-        intro_router
+        intro_router,
+        points_of_city_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())
     await dp.start_polling(bot)
