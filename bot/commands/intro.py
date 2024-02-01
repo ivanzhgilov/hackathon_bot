@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram_dialog import DialogManager
 
 from core.constants import UserRoleTranslation
 from core.simple_dialog_handler import SimpleDialog, DialogContextStep, RetryError, ExitHandler
@@ -21,6 +22,10 @@ intro_router = Router(name='intro')
 intro_dialogs = dialogs['intro']
 
 
+class MainMenu(StatesGroup):
+    main = State()
+
+
 class FillAboutForm(StatesGroup):
     about = State()
     role = State()
@@ -29,11 +34,11 @@ class FillAboutForm(StatesGroup):
 
 class IntroActionKinds(str, enum.Enum):
     confirm = 'confirm'
-    points_of_city = 'points_of_city'
     eco_lesson = 'eco_lesson'
     recycling_tips = 'recycling_tips'
     eco_piggy_bank = 'eco_piggy_bank'
     usefull_links = 'useful_links'
+    points_of_city = 'points_of_city'
 
 
 class IntroAction(CallbackData, prefix='intr'):
@@ -42,6 +47,7 @@ class IntroAction(CallbackData, prefix='intr'):
 
 @intro_router.message(Command('start'))
 async def start(message: Message, state: FSMContext):
+    await state.clear()
     # сессия к БД также должна проходить через DI и передаваться в параметры функции, но встроенный DI у aiogram также плох
     async with db_async_session_manager() as session:
         await account_service.register_account(
