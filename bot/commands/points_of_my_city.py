@@ -16,6 +16,14 @@ from utils.keyboards import get_home_keyboard
 
 points_of_city_router = Router(name='points')
 
+waste_select = Multiselect(
+    Format("✓ {item[0]}"),  # E.g `✓ Apple`
+    Format("{item[0]}"),
+    id="m_waste_types",
+    item_id_getter=operator.itemgetter(1),
+    items="waste_types"
+)
+
 
 class PointsActionKinds(str, enum.Enum):
     points_of_city = 'points_of_city'
@@ -23,18 +31,18 @@ class PointsActionKinds(str, enum.Enum):
     main_menu = 'main_menu'
 
 
-categories = '''Бумага📃
-Пластик🔫
-Стекло🍾
-Металл⚙️
-Одежда🎩
-Лампочки💡
-Крышечки🔴
-Техника📱	
-Батареки🪫
-Шины🛞
-Опасное☢
-Другое'''
+categories = ['Бумага📃',
+              'Пластик🔫',
+              'Стекло🍾',
+              'Металл⚙️',
+              'Одежда🎩',
+              'Лампочки💡',
+              'Крышечки🔴',
+              'Техника📱',
+              'Батареки🪫',
+              'Шины🛞',
+              'Опасное☢',
+              'Другое']
 
 
 # checked_lst = []
@@ -50,7 +58,7 @@ categories = '''Бумага📃
 
 
 async def get_data(**kwargs):
-    waste_types = [(el, i) for i, el in enumerate(categories.split('\n'))]
+    waste_types = [(el, i) for i, el in enumerate(categories)]
     return {
         "waste_types": waste_types,
         "count": len(waste_types),
@@ -91,10 +99,10 @@ async def func(query: CallbackQuery, state: FSMContext, bot: Bot, dialog_manager
 
 
 async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):
-    global checked_lst
-    print(checked_lst)
-    manager.dialog_data["lat"] = message.location.latitude
-    manager.dialog_data["long"] = message.location.longitude
+    lat = message.location.latitude
+    long = message.location.longitude
+    await message.delete()
+    categories = waste_select.get_checked(manager)
     await manager.done()
 
 
@@ -102,13 +110,7 @@ dialog = Dialog(
     Window(
         Const("Выберите виды мусора для сортировки"),
         Next(Const("Категории выбраны✔️")),
-        Column(Multiselect(
-            Format("✓ {item[0]}"),  # E.g `✓ Apple`
-            Format("{item[0]}"),
-            id="m_waste_types",
-            item_id_getter=operator.itemgetter(1),
-            items="waste_types"
-        )),
+        Column(waste_select),
         getter=get_data
         ,
         state=GetClosestPoint.choosing_categories,
