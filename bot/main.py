@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot
 from aiogram.enums import ParseMode
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
+from aiogram_dialog import setup_dialogs
 
 from app import dp
 from commands.intro import intro_router
@@ -23,6 +24,7 @@ async def main() -> None:
         points_of_city_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())
+    setup_dialogs(dp)
     await dp.start_polling(bot)
 
 

@@ -1,19 +1,19 @@
 import enum
 import operator
 
-from aiogram import Bot, Router, F
-from aiogram.fsm.context import FSMContext
+from aiogram import Router
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import Window, DialogManager, StartMode, Dialog, setup_dialogs, DialogProtocol
+from aiogram_dialog import Window, DialogManager, StartMode, Dialog, DialogProtocol
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Next, Back, Cancel, Button, Multiselect, Column
 from aiogram_dialog.widgets.text import Const, Format
 
 from app import dp
-from commands.intro import IntroAction, intro_dialogs
-from utils.keyboards import get_home_keyboard
+from commands.state_classes import MainMenu, GetClosestPoint
+from core.text import dialogs
 
+intro_dialogs = dialogs['intro']
 points_of_city_router = Router(name='points')
 
 waste_select = Multiselect(
@@ -65,37 +65,9 @@ async def get_data(**kwargs):
     }
 
 
-class GetClosestPoint(StatesGroup):
-    choosing_categories = State()
-    getting_cords = State()
-
-
-@points_of_city_router.callback_query(IntroAction.filter(F.action == PointsActionKinds.points_of_city))
-async def func(query: CallbackQuery, state: FSMContext, bot: Bot, dialog_manager: DialogManager):
-    await dialog_manager.start(GetClosestPoint.choosing_categories, mode=StartMode.RESET_STACK)
-
-
-async def main_menu(callback: CallbackQuery, button: Button,
-                    manager: DialogManager):
-    await manager.done()
-    builder = get_home_keyboard()
-    await callback.message.answer(
-        intro_dialogs['start']['usage_statistic'],
-
-        reply_markup=builder.as_markup()
-
-    )
-
-
-@points_of_city_router.callback_query(IntroAction.filter(F.action == PointsActionKinds.main_menu))
-async def func(query: CallbackQuery, state: FSMContext, bot: Bot, dialog_manager: DialogManager):
-    builder = get_home_keyboard()
-    await query.answer(
-        intro_dialogs['start']['usage_statistic'],
-
-        reply_markup=builder.as_markup()
-
-    )
+async def points_of_city_start(callback: CallbackQuery, button: Button,
+                               manager: DialogManager):
+    await manager.start(GetClosestPoint.choosing_categories)
 
 
 async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):
@@ -103,7 +75,12 @@ async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogMa
     long = message.location.longitude
     await message.delete()
     categories = waste_select.get_checked(manager)
-    await manager.done()
+    await manager.start(MainMenu.main, mode=StartMode.RESET_STACK)
+
+
+# async def close(callback: CallbackQuery, button: Button,
+#                 manager: DialogManager):
+#     await manager.switch_to(MainMenu.main)
 
 
 dialog = Dialog(
@@ -118,11 +95,10 @@ dialog = Dialog(
     Window(
         Const("Отправьте свои координаты"),
         Back(Const("⬅Вернуться к выбору категорий")),
-        Cancel(Const("Close"), on_click=main_menu),
+        Cancel(Const("Главное меню")),
         MessageInput(cords_sent),
         state=GetClosestPoint.getting_cords,
     )
 )
 
 dp.include_router(dialog)
-setup_dialogs(dp)
