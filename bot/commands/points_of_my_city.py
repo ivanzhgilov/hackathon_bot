@@ -72,10 +72,14 @@ async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogMa
     lon = message.location.longitude
     await message.delete()
 
-    city = points.get(await get_city(lat, lon))
-    chosen = [i[1:-1] for i in waste_select.get_checked(manager)]
-    if city:
-        text = await find_closest(city, chosen)
+    city = await get_city(lat, lon)
+    if city == "городской округ Сургут":
+        city = "Сургут"
+    city_points = points.get(city)
+    chosen = [categories[int(i)][:-1] for i in waste_select.get_checked(manager)]
+    print(chosen)
+    if city_points:
+        text = await find_closest(city_points, chosen, lat, lon)
         await message.answer(text)
     await manager.start(MainMenu.main, mode=StartMode.RESET_STACK)
 
