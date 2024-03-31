@@ -1,8 +1,20 @@
+import asyncio
 import logging
 import re
 from typing import Literal
 
+from geopy.adapters import AioHTTPAdapter
+from geopy.distance import distance
+from geopy.geocoders import Nominatim
 
+
+async def get_city(lat, lon):
+    async with Nominatim(
+            user_agent="my-mput-srr",
+            adapter_factory=AioHTTPAdapter,
+    ) as geolocator:
+        location = await geolocator.reverse(f"{lat}, {lon}")
+        return location.raw["address"].get("city", "")
 
 
 def setup_logging(level: Literal['DEBUG', 'INFO', 'ERROR', 'WARNING'] = 'DEBUG'):
@@ -14,6 +26,33 @@ def setup_logging(level: Literal['DEBUG', 'INFO', 'ERROR', 'WARNING'] = 'DEBUG')
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         force=True
     )
+
+
+async def calculate_distance(point, user_coordinates):
+    return distance(user_coordinates, (point["coordinates"]["lat"], point["coordinates"]["lon"])).km
+
+
+async def find_matching_points(points, user_waste_categories):
+    tasks = [asyncio.create_task(calculate_distance(point)) for point in points if
+             set(user_waste_categories).issubset(set(point["types_of_garbage"]))]
+    distances = await asyncio.gather(*tasks)
+    return [(point, distance) for point, distance in zip(points, distances) if
+            set(user_waste_categories).issubset(set(point["types_of_garbage"]))]
+
+
+async def find_closest(points, user_waste_categories):
+    matching_points = await find_matching_points(points, user_waste_categories)
+    if matching_points:
+        closest_point = min(matching_points, key=lambda x: x[1])
+        return f"The nearest point where you can dispose of all your waste is: {closest_point[0]['title']}"
+    else:
+        tasks = [asyncio.create_task(calculate_distance(point, user_waste_categories)) for point in points]
+        distances = await asyncio.gather(*tasks)
+        sorted_points = sorted([(point, distance) for point, distance in zip(points, distances)], key=lambda x: x[1])
+        print(
+            "There is no point where you can dispose of all your waste. Here are the nearest points for each type of waste:")
+        for point, distance in sorted_points:
+            return f"{point['title']}: {distance:.2f} km away. Accepts: {', '.join(point['types_of_garbage'])}"
 
 
 def to_camel(string: str) -> str:

@@ -1,8 +1,9 @@
 import enum
+import json
 import operator
+import os
 
 from aiogram import Router
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Window, DialogManager, StartMode, Dialog, DialogProtocol
 from aiogram_dialog.widgets.input import MessageInput
@@ -12,12 +13,20 @@ from aiogram_dialog.widgets.text import Const, Format
 from app import dp
 from commands.state_classes import MainMenu, GetClosestPoint
 from core.text import dialogs
+from utils.utils import get_city, find_matching_points, find_closest
 
 intro_dialogs = dialogs['intro']
 points_of_city_router = Router(name='points')
 
+commands_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Open the 'points.json' file using its absolute path
+with open(os.path.join(commands_dir, 'points.json'), encoding='utf-8') as file:
+    points = json.load(file)
+
+
 waste_select = Multiselect(
-    Format("✓ {item[0]}"),  # E.g `✓ Apple`
+    Format("✓ {item[0]}"),
     Format("{item[0]}"),
     id="m_waste_types",
     item_id_getter=operator.itemgetter(1),
@@ -45,18 +54,6 @@ categories = ['Бумага📃',
               'Другое']
 
 
-# checked_lst = []
-#
-#
-# async def check_changed(event: ChatEvent, checkbox: ManagedCheckbox,
-#                         manager: DialogManager):
-#     global checked_lst
-#     if checkbox.is_checked():
-#         checked_lst.append(checkbox.)
-#     else:
-#         checked_lst.remove(checkbox.)
-
-
 async def get_data(**kwargs):
     waste_types = [(el, i) for i, el in enumerate(categories)]
     return {
@@ -72,15 +69,15 @@ async def points_of_city_start(callback: CallbackQuery, button: Button,
 
 async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):
     lat = message.location.latitude
-    long = message.location.longitude
+    lon = message.location.longitude
     await message.delete()
-    categories = waste_select.get_checked(manager)
+
+    city = points.get(await get_city(lat, lon))
+    chosen = [i[1:-1] for i in waste_select.get_checked(manager)]
+    if city:
+        text = await find_closest(city, chosen)
+        await message.answer(text)
     await manager.start(MainMenu.main, mode=StartMode.RESET_STACK)
-
-
-# async def close(callback: CallbackQuery, button: Button,
-#                 manager: DialogManager):
-#     await manager.switch_to(MainMenu.main)
 
 
 dialog = Dialog(
