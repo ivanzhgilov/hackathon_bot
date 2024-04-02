@@ -2,6 +2,7 @@ import enum
 import json
 import operator
 import os
+import os
 
 from aiogram import Router
 from aiogram.types import CallbackQuery, Message
@@ -89,8 +90,7 @@ dialog = Dialog(
         Const("Выберите виды мусора для сортировки"),
         Next(Const("Категории выбраны✔️")),
         Column(waste_select),
-        getter=get_data
-        ,
+        getter=get_data,
         state=GetClosestPoint.choosing_categories,
     ),
     Window(

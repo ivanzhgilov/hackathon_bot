@@ -7,7 +7,7 @@ from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from aiogram_dialog import setup_dialogs
 
 from app import dp
-from commands.intro import intro_router
+from commands.intro import intro_router, admin_router
 from commands.points_of_my_city import points_of_city_router
 from core.config import config
 from utils.utils import setup_logging
@@ -21,7 +21,8 @@ async def main() -> None:
     bot = Bot(config.bot_token, parse_mode=ParseMode.HTML)
     dp.include_routers(
         intro_router,
-        points_of_city_router
+        points_of_city_router,
+        admin_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())
     setup_dialogs(dp)

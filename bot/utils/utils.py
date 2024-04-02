@@ -8,6 +8,10 @@ from geopy.distance import distance
 from geopy.geocoders import Nominatim
 
 
+async def check_password(password: str):
+    return True
+
+
 async def get_city(lat, lon):
     async with Nominatim(
             user_agent="my-mput-srr",
