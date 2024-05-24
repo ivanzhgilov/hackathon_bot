@@ -7,6 +7,7 @@ class UserInit(Model):
     login: str
     name: str | None
     surname: str | None
+    admin: bool
 
 
 class UserAbout(Model):

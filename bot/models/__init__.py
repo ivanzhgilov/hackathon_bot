@@ -1,2 +1,3 @@
-from models.user import User
+from models.admin_password import AdminPassword
 from models.core import Base
+from models.user import User

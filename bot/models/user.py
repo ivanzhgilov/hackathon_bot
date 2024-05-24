@@ -16,3 +16,4 @@ class User(Base, TimestampMixin):
         BigInteger(), index=True, unique=True
     )  # у telegram года так с 22го для id пользователей используется int64
     about: Mapped[dict | None] = mapped_column(JSONB())
+    admin: Mapped[bool] = mapped_column(default=False)

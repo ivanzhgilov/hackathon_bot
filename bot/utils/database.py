@@ -34,6 +34,7 @@ def async_session_factory(
 
     async def get_async_session() -> AsyncSession:
         from models.user import User
+        from models.admin_password import AdminPassword
         from models.core import Base
 
         async with engine.begin() as conn:

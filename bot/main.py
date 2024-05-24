@@ -6,8 +6,10 @@ from aiogram.enums import ParseMode
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from aiogram_dialog import setup_dialogs
 
+from admin_menu import admin_router
 from app import dp
-from commands.intro import intro_router, admin_router
+from articles import article_router
+from commands.intro import intro_router
 from commands.points_of_my_city import points_of_city_router
 from core.config import config
 from utils.utils import setup_logging
@@ -22,7 +24,8 @@ async def main() -> None:
     dp.include_routers(
         intro_router,
         points_of_city_router,
-        admin_router
+        admin_router,
+        article_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())
     setup_dialogs(dp)

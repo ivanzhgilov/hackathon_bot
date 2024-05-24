@@ -3,13 +3,20 @@ import logging
 import re
 from typing import Literal
 
+import argon2
 from geopy.adapters import AioHTTPAdapter
 from geopy.distance import distance
 from geopy.geocoders import Nominatim
 
 
-async def check_password(password: str):
-    return True
+def hash_password(password: str) -> str:
+    argon2_hasher = argon2.PasswordHasher()
+    return argon2_hasher.hash(password)
+
+
+def check_password(hashed_password: str, password: str) -> bool:
+    argon2_hasher = argon2.PasswordHasher()
+    return argon2_hasher.verify(hashed_password, password)
 
 
 async def get_city(lat, lon):
@@ -48,8 +55,17 @@ async def find_matching_points(points, user_waste_categories, lat, lon):
 async def find_closest(points, user_waste_categories, lat, lon):
     matching_points = await find_matching_points(points, user_waste_categories, lat, lon)
     if matching_points:
-        closest_point = min(matching_points, key=lambda x: x[1])
-        return f"The nearest point where you can dispose of all your waste is: {closest_point[0]['title']}"
+        closest_point = min(matching_points, key=lambda x: x[1])[0]
+        text = f"""{closest_point['title']}
+        
+{closest_point['description']}
+
+{closest_point['address']}
+
+Принимается: {', '.join(closest_point['types_of_garbage'])}
+
+Номер телефона: {closest_point['phone_number']}"""
+        return text
     else:
         tasks = [asyncio.create_task(calculate_distance(point, (lat, lon))) for point in points if
                  set(user_waste_categories).issubset(set(point["types_of_garbage"]))]
@@ -59,7 +75,16 @@ async def find_closest(points, user_waste_categories, lat, lon):
         print(
             "There is no point where you can dispose of all your waste. Here are the nearest points for each type of waste:")
         for point, distance in sorted_points:
-            lst.append(f"{point['title']}: {distance:.2f} km away. Accepts: {', '.join(point['types_of_garbage'])}")
+            text = f"""{point['title']}
+            
+            {point['description']}
+            
+            {point['address']}
+            
+            Принимается: {', '.join(point['types_of_garbage'])}
+            
+            Номер телефона: {point['phone_number']}"""
+            lst.append(text)
         return "\n".join(lst)
 
 
@@ -89,3 +114,6 @@ def to_cebab(string: str) -> str:
     Из CamelCase в cebab-case
     """
     return re.sub('(?!^)([A-Z]+)', r'-\1', string).lower()
+
+
+print(hash_password("test123"))
