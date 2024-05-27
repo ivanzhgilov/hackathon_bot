@@ -52,7 +52,7 @@ categories = ['Бумага📃',
               'Батареки🪫',
               'Шины🛞',
               'Опасное☢',
-              'Другое']
+              'Другое ']
 
 
 async def get_data(**kwargs):
@@ -79,8 +79,9 @@ async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogMa
     city_points = points.get(city)
     chosen = [categories[int(i)][:-1] for i in waste_select.get_checked(manager)]
     if city_points:
-        text = await find_closest(city_points, chosen, lat, lon)
-        await message.answer(text)
+        lst = await find_closest(city_points, chosen, lat, lon)
+        for text in lst:
+            await message.answer(text)
     await manager.start(MainMenu.main, mode=StartMode.RESET_STACK)
 
 

@@ -1,16 +1,16 @@
 import enum
 
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import Window, Dialog, DialogManager, StartMode
-from aiogram_dialog.widgets.kbd import Button, Row, Column
+from aiogram_dialog.widgets.kbd import Button, Row, Column, Url
 from aiogram_dialog.widgets.text import Const
 
 from app import dp
 from articles import articles_start
-from commands.points_of_my_city import points_of_city_start
-from commands.state_classes import MainMenu, AdminMenu
+from commands.state_classes import MainMenu, AdminMenu, PointCreate, EcoPiggyBank
 from core.text import dialogs
+from points_of_my_city import points_of_city_start
 from schemas.user import UserInit
 from services.account_service import account_service
 from services.statistic_service import statistic_service
@@ -42,6 +42,16 @@ async def admin(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(AdminMenu.admin_password, mode=StartMode.NORMAL)
 
 
+async def point_request_start(callback: CallbackQuery, button: Button,
+                              manager: DialogManager):
+    await manager.start(PointCreate.title)
+
+
+async def eco_bankt_start(callback: CallbackQuery, button: Button,
+                          manager: DialogManager):
+    await manager.start(EcoPiggyBank.show)
+
+
 class IntroActionKinds(str, enum.Enum):
     confirm = 'confirm'
     eco_lesson = 'eco_lesson'
@@ -55,9 +65,10 @@ main_window = Window(
     Const(intro_dialogs['start']['hello']),
     Column(Button(Const(intro_dialogs['start']['points_of_city_button']), id='points_of_city',
                   on_click=points_of_city_start),
-           Button(Const(intro_dialogs['start']['recycling_tips_button']), id='recycling_tips', on_click=articles_start)),
-    Row(Button(Const(intro_dialogs['start']['eco_lesson_button']), id='eco_lesson'),
-        Button(Const(intro_dialogs['start']['eco_piggy_bank_button']), id='eco_piggy_bank'),
+           Button(Const(intro_dialogs['start']['recycling_tips_button']), id='recycling_tips', on_click=articles_start),
+           Button(Const("Предожить точку"), id='point_request', on_click=point_request_start)),
+    Row(Url(Const(intro_dialogs['start']['eco_lesson_button']), Const("https://sobiraet.yugra-ecology.ru/form")),
+        Button(Const(intro_dialogs['start']['eco_piggy_bank_button']), id='eco_piggy_bank', on_click=eco_bankt_start),
         Button(Const(intro_dialogs['start']['useful_links_button']), id='useful_links')),
 
     state=MainMenu.main,

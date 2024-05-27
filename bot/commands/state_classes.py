@@ -24,5 +24,29 @@ class ArticleSender(StatesGroup):
     sending_article = State()
 
 
+class ArticleManage(StatesGroup):
+    start = State()
+
+
+class PointCreate(StatesGroup):
+    title = State()
+    description = State()
+    address = State()
+    phone_number = State()
+    types_of_garbage = State()
+    save = State()
+    sure = State()
+    notification = State()
+
+
+class ArticleEdit(StatesGroup):
+    choosing = State()
+    managing = State()
+    sure = State()
+
+class EcoPiggyBank(StatesGroup):
+    show = State()
+
+
 class Nothing(StatesGroup):
     nothing = State()

@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button, Column, Cancel
 from aiogram_dialog.widgets.text import Const
 from sqlalchemy import select
 
-from commands.state_classes import AdminMenu
+from commands.state_classes import AdminMenu, ArticleManage
 from core.text import dialogs
 from models import AdminPassword
 from utils.database import db_async_session_manager
@@ -20,6 +20,9 @@ async def password_sent(message: Message, dialog: DialogProtocol, manager: Dialo
     if check_password(hashed_password.password, message.text):
         await manager.next()
 
+async def manage_articles_start(callback, button, manager):
+    await manager.start(ArticleManage.start)
+
 
 admin_router = Dialog(Window(
     Const(admin_dialogs['password']),
@@ -27,7 +30,7 @@ admin_router = Dialog(Window(
     MessageInput(password_sent),
     state=AdminMenu.admin_password
 ),
-    Window(Const('OOOO ADMIN'), Column(Button(Const(admin_dialogs['new_article_button']), id='new_article'),
+    Window(Const('OOOO ADMIN'), Column(Button(Const(admin_dialogs['manage_articles_button']), id='manage_articles', on_click=manage_articles_start),
                                        Button(Const(admin_dialogs['post_news_button']), id='post_news'),
                                        Button(Const(admin_dialogs['get_statistic_button']),
                                               id='get_statistic'),

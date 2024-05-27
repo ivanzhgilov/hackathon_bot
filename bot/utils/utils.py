@@ -3,10 +3,27 @@ import logging
 import re
 from typing import Literal
 
+import aiohttp
 import argon2
 from geopy.adapters import AioHTTPAdapter
 from geopy.distance import distance
 from geopy.geocoders import Nominatim
+
+
+async def get_coordinates_by_address(address: str, country_code: str = 'RU') -> tuple:
+    url = f"https://nominatim.openstreetmap.org/search?q={address},{country_code}&format=json&limit=1"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status != 200:
+                return None, None
+
+            data = await response.json()
+            if not data:
+                return None, None
+
+            lon, lat = data[0]["lon"], data[0]["lat"]
+            return float(lat), float(lon)
 
 
 def hash_password(password: str) -> str:
@@ -53,6 +70,7 @@ async def find_matching_points(points, user_waste_categories, lat, lon):
 
 
 async def find_closest(points, user_waste_categories, lat, lon):
+    output = []
     matching_points = await find_matching_points(points, user_waste_categories, lat, lon)
     if matching_points:
         closest_point = min(matching_points, key=lambda x: x[1])[0]
@@ -65,27 +83,36 @@ async def find_closest(points, user_waste_categories, lat, lon):
 Принимается: {', '.join(closest_point['types_of_garbage'])}
 
 Номер телефона: {closest_point['phone_number']}"""
-        return text
+        output.append(text)
+        return output
     else:
+        lst = []
+        output.append(
+            """К сожалению точки в которой вы можете сдать все выбранные категории мусора не нащлось, поэтому вот юлижайшие точки для каждой категории""")
         tasks = [asyncio.create_task(calculate_distance(point, (lat, lon))) for point in points if
                  set(user_waste_categories).issubset(set(point["types_of_garbage"]))]
-        distances = await asyncio.gather(*tasks)
-        sorted_points = sorted([(point, distance) for point, distance in zip(points, distances)], key=lambda x: x[1])
-        lst = []
-        print(
-            "There is no point where you can dispose of all your waste. Here are the nearest points for each type of waste:")
-        for point, distance in sorted_points:
-            text = f"""{point['title']}
-            
-            {point['description']}
-            
-            {point['address']}
-            
-            Принимается: {', '.join(point['types_of_garbage'])}
-            
-            Номер телефона: {point['phone_number']}"""
-            lst.append(text)
-        return "\n".join(lst)
+
+        for category in user_waste_categories:
+            tasks = [asyncio.create_task(calculate_distance(point, (lat, lon))) for point in points if
+                     category in point["types_of_garbage"]]
+            lst.append(tasks)
+        for el in lst:
+            distances = await asyncio.gather(*el)
+            x = [(point, distance) for point, distance in zip(points, distances)]
+            if x:
+                closest_point = min(x,
+                                    key=lambda x: x[1])[0]
+                text = f"""{closest_point['title']}
+    
+{closest_point['description']}
+    
+{closest_point['address']}
+    
+Принимается: {', '.join(closest_point['types_of_garbage'])}
+    
+Номер телефона: {closest_point['phone_number']}"""
+                output.append(text)
+        return output
 
 
 def to_camel(string: str) -> str:

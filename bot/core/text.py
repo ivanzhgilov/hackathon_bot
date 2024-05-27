@@ -23,7 +23,7 @@ dialogs = {
                         'Если хотите заново заполнить информацию о себе, можете нажать /start'
     },
     'admin': {
-        'new_article_button': 'Новая статья',
+        'manage_articles_button': 'Управлять статьями',
         'post_news_button': 'Выложить новость',
         'get_statistic_button': 'Статистика',
         'password': 'Введите пароль администратора'}
