@@ -43,9 +43,25 @@ class ArticleEdit(StatesGroup):
     choosing = State()
     managing = State()
     sure = State()
+    result = State()
+
 
 class EcoPiggyBank(StatesGroup):
     show = State()
+
+
+class AddArticle(StatesGroup):
+    insert_name = State()
+    insert_text = State()
+    sure = State()
+    result = State()
+
+
+class CreatingNewsletter(StatesGroup):
+    text_insert = State()
+    media_insert = State()
+    sure = State()
+    result = State()
 
 
 class Nothing(StatesGroup):

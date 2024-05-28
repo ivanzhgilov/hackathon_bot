@@ -20,30 +20,6 @@ article_router = Router(name='articles')
 commands_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-# Open the 'points.json' file using its absolute path
-# async def get_data(**kwargs):
-#     with open(os.path.join(commands_dir, 'articles.json'), encoding='utf-8') as file:
-#         articles = json.load(file)
-#         article_names = articles.keys()
-#         article_ids = {}
-#         translit_back = {}
-#         for name in article_names:
-#             article_ids[name] = translit(name, language_code='ru', reversed=True).replace(" ", "").replace("'",
-#                                                                                                            "").lower()
-#             translit_back[article_ids[name]] = name
-#     return {
-#         "article_names": article_names,
-#         "article_ids": article_ids,
-#         "articles": articles,
-#         "translit_back": translit_back
-# }
-
-
-# async def process_article_selection(callback: CallbackQuery, button: Button,
-#                                     manager: DialogManager):
-#     # manager.dialog_data["key"] = translit_back[callback.data]
-#     # manager.dialog_data["text"] = articles[translit_back[callback.data]]
-#     await manager.next()
 @dp.callback_query(F.data == "articles_start")
 async def articles_restart(callback: CallbackQuery, manager: DialogManager):
     await manager.start(ArticleChoose.choosing_article)
@@ -91,7 +67,7 @@ kbd = Select(
 
 dialog = Dialog(Window(Const('Выберете статью'),
                        Column(kbd,
-                       Cancel(Const("Главное меню"))), state=ArticleChoose.choosing_article, getter=get_data),
+                              Cancel(Const("Главное меню"))), state=ArticleChoose.choosing_article, getter=get_data),
                 Window(Format('{dialog_data[text]}'),
                        Back(Const("Назад")),
                        Cancel(Const("Главное меню")), state=ArticleChoose.sending_article

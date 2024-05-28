@@ -2,19 +2,19 @@ import enum
 import json
 import operator
 import os
-import os
 
 from aiogram import Router
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Window, DialogManager, StartMode, Dialog, DialogProtocol
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Next, Back, Cancel, Button, Multiselect, Column
+from aiogram_dialog.widgets.kbd import Next, Back, Cancel, Button, Multiselect, Column, RequestLocation
+from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory
 from aiogram_dialog.widgets.text import Const, Format
 
 from app import dp
 from commands.state_classes import MainMenu, GetClosestPoint
 from core.text import dialogs
-from utils.utils import get_city, find_matching_points, find_closest
+from utils.utils import get_city, find_closest
 
 intro_dialogs = dialogs['intro']
 points_of_city_router = Router(name='points')
@@ -24,7 +24,6 @@ commands_dir = os.path.dirname(os.path.abspath(__file__))
 # Open the 'points.json' file using its absolute path
 with open(os.path.join(commands_dir, 'points.json'), encoding='utf-8') as file:
     points = json.load(file)
-
 
 waste_select = Multiselect(
     Format("✓ {item[0]}"),
@@ -82,6 +81,8 @@ async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogMa
         lst = await find_closest(city_points, chosen, lat, lon)
         for text in lst:
             await message.answer(text)
+    else:
+        await message.answer("К сожалению в вашем населенном пункте нет точек удовлетворяющих данным параметрам")
     await manager.start(MainMenu.main, mode=StartMode.RESET_STACK)
 
 
@@ -95,10 +96,12 @@ dialog = Dialog(
     ),
     Window(
         Const("Отправьте свои координаты"),
+        RequestLocation(Const("Отправить геолокацию")),
         Back(Const("⬅Вернуться к выбору категорий")),
         Cancel(Const("Главное меню")),
         MessageInput(cords_sent),
         state=GetClosestPoint.getting_cords,
+        markup_factory=ReplyKeyboardFactory()
     )
 )
 
