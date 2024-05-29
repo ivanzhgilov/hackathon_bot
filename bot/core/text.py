@@ -28,3 +28,15 @@ dialogs = {
         'get_statistic_button': 'Статистика',
         'password': 'Введите пароль администратора'}
 }
+
+
+def get_point_text(closest_point):
+    return f"""{closest_point['title']}
+        
+{closest_point['description']}
+
+{closest_point['address']}
+
+Принимается: {', '.join(closest_point['types_of_garbage'])}
+
+Номер телефона: {closest_point['phone_number']}"""

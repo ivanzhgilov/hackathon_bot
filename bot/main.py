@@ -4,6 +4,7 @@ import logging
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from aiogram_dialog import setup_dialogs
 
+import admin_point_create
 from admin_menu import admin_router
 from app import dp, bot
 from articles import article_router
@@ -30,7 +31,8 @@ async def main(bot) -> None:
         managing_articles_router,
         point_create_router,
         eco_bank_router,
-        newsletter_router
+        newsletter_router,
+        admin_point_create.admin_point_create_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())
     setup_dialogs(dp)

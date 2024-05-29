@@ -9,6 +9,8 @@ from geopy.adapters import AioHTTPAdapter
 from geopy.distance import distance
 from geopy.geocoders import Nominatim
 
+from core.text import get_point_text
+
 
 async def get_coordinates_by_address(address: str, country_code: str = 'RU') -> tuple:
     url = f"https://nominatim.openstreetmap.org/search?q={address},{country_code}&format=json&limit=1"
@@ -74,15 +76,7 @@ async def find_closest(points, user_waste_categories, lat, lon):
     matching_points = await find_matching_points(points, user_waste_categories, lat, lon)
     if matching_points:
         closest_point = min(matching_points, key=lambda x: x[1])[0]
-        text = f"""{closest_point['title']}
-        
-{closest_point['description']}
-
-{closest_point['address']}
-
-Принимается: {', '.join(closest_point['types_of_garbage'])}
-
-Номер телефона: {closest_point['phone_number']}"""
+        text = get_point_text(closest_point)
         output.append(text)
         return output
     else:
@@ -102,15 +96,7 @@ async def find_closest(points, user_waste_categories, lat, lon):
             if x:
                 closest_point = min(x,
                                     key=lambda x: x[1])[0]
-                text = f"""{closest_point['title']}
-    
-{closest_point['description']}
-    
-{closest_point['address']}
-    
-Принимается: {', '.join(closest_point['types_of_garbage'])}
-    
-Номер телефона: {closest_point['phone_number']}"""
+                text = get_point_text(closest_point)
                 output.append(text)
         return output
 

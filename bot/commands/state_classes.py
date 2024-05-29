@@ -64,5 +64,17 @@ class CreatingNewsletter(StatesGroup):
     result = State()
 
 
+class AdminPointCreate(StatesGroup):
+    title = State()
+    description = State()
+    address = State()
+    phone_number = State()
+    types_of_garbage = State()
+    cords = State()
+    save = State()
+    sure = State()
+    notification = State()
+
+
 class Nothing(StatesGroup):
     nothing = State()

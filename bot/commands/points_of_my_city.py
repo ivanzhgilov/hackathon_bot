@@ -21,9 +21,7 @@ points_of_city_router = Router(name='points')
 
 commands_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Open the 'points.json' file using its absolute path
-with open(os.path.join(commands_dir, 'points.json'), encoding='utf-8') as file:
-    points = json.load(file)
+# Open the 'points.json' file using its absolute pat
 
 waste_select = Multiselect(
     Format("✓ {item[0]}"),
@@ -68,6 +66,8 @@ async def points_of_city_start(callback: CallbackQuery, button: Button,
 
 
 async def cords_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):
+    with open(os.path.join(commands_dir, 'points.json'), encoding='utf-8') as file:
+        points = json.load(file)
     lat = message.location.latitude
     lon = message.location.longitude
     await message.delete()

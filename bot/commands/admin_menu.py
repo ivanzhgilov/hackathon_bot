@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button, Column, Cancel
 from aiogram_dialog.widgets.text import Const
 from sqlalchemy import select
 
-from commands.state_classes import AdminMenu, ArticleManage, CreatingNewsletter
+from commands.state_classes import AdminMenu, ArticleManage, CreatingNewsletter, AdminPointCreate
 from core.text import dialogs
 from models import AdminPassword
 from utils.database import db_async_session_manager
@@ -29,6 +29,10 @@ async def newsletter_start(callback, button, manager):
     await manager.start(CreatingNewsletter.text_insert)
 
 
+async def admin_point_add_start(callback, button, manager):
+    await manager.start(AdminPointCreate.title)
+
+
 admin_router = Dialog(Window(
     Const(admin_dialogs['password']),
     Cancel(Const("Главное меню")),
@@ -38,6 +42,7 @@ admin_router = Dialog(Window(
     Window(Const('OOOO ADMIN'), Column(
         Button(Const(admin_dialogs['manage_articles_button']), id='manage_articles', on_click=manage_articles_start),
         Button(Const(admin_dialogs['post_news_button']), id='post_news', on_click=newsletter_start),
+        Button(Const("Добавить точку"), id='admin_add_point', on_click=admin_point_add_start),
         Button(Const(admin_dialogs['get_statistic_button']),
                id='get_statistic'),
         Cancel(Const("Главное меню"))),
