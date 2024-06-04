@@ -11,7 +11,6 @@ class AdminMenu(StatesGroup):
 
 
 class GetClosestPoint(StatesGroup):
-    choosing_categories = State()
     getting_cords = State()
 
 
@@ -70,10 +69,30 @@ class AdminPointCreate(StatesGroup):
     address = State()
     phone_number = State()
     types_of_garbage = State()
+    schedule = State()
     cords = State()
     save = State()
     sure = State()
     notification = State()
+
+
+class AdminPointRequestsWatching(StatesGroup):
+    points = State()
+
+
+class AdminPointRequestsManaging(StatesGroup):
+    cords = State()
+    sure = State()
+    save = State()
+
+
+class GetStats(StatesGroup):
+    days = State()
+    stats = State()
+
+
+class Links(StatesGroup):
+    links = State()
 
 
 class Nothing(StatesGroup):

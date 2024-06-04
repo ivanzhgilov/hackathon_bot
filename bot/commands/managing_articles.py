@@ -82,7 +82,7 @@ async def approve_article(callback: CallbackQuery, button: Button, manager: Dial
         articles = json.load(file)
     articles[manager.dialog_data['name']] = manager.dialog_data['text']
     with open(os.path.join(commands_dir, 'articles.json'), 'w', encoding='utf-8') as file:
-        json.dump(articles, file, indent=4)
+        json.dump(articles, file, indent=4, ensure_ascii=False)
     await manager.next()
 
 
@@ -103,9 +103,9 @@ start_dialog = Dialog(Window(Const('Выберите опцию'),
 
 edit_article_dialog = Dialog(Window(Const('Выберите стаью'),
                                     Column(kbd,
-                                           Cancel(Const("Назад"))), state=ArticleEdit.choosing, getter=get_data),
+                                           Cancel(Const("Назад⬅️"))), state=ArticleEdit.choosing, getter=get_data),
                              Window(Format('{dialog_data[text]}'),
-                                    Row(Back(Const("Назад")),
+                                    Row(Back(Const("Назад ⬅️")),
                                         Button(Const('Удалить'), id='start_delete_article',
                                                on_click=start_delete_article)),
                                     Cancel(Const("Отменить")), state=ArticleEdit.managing),
@@ -114,14 +114,14 @@ edit_article_dialog = Dialog(Window(Const('Выберите стаью'),
                                     Cancel(Const("Отменить")), state=ArticleEdit.sure),
                              Window(Const("Успешно!"), Cancel(Const('В меню администратора')), state=ArticleEdit.result))
 
-add_article_dialog = Dialog(Window(Const("Введите название статьи"), Cancel(Const("Отмена")),
+add_article_dialog = Dialog(Window(Const("Введите название статьи"), Cancel(Const("Отмена❌")),
                                    MessageInput(insert_name), state=AddArticle.insert_name),
-                            Window(Const("Отправьте текст статьи"), Cancel(Const("Отмена")), Back(Const("Назад")),
+                            Window(Const("Отправьте текст статьи"), Cancel(Const("Отмена❌")), Back(Const("Назад⬅️")),
                                    MessageInput(insert_text), state=AddArticle.insert_text),
                             Window(Format("""{dialog_data[name]}
-{dialog_data[text]}"""), Button(Const("Подтвердить"), id="approve_article", on_click=approve_article),
-                                   Cancel(Const('Отмена')), Back(Const("Назад")), state=AddArticle.sure),
-                            Window(Const("Успешно!"), Cancel(Const('В меню администратора')), state=AddArticle.result))
+{dialog_data[text]}"""), Button(Const("Подтвердить✅"), id="approve_article", on_click=approve_article),
+                                   Cancel(Const('Отмена❌')), Back(Const("Назад ⬅️")), state=AddArticle.sure),
+                            Window(Const("Успешно!"), Cancel(Const('К управлению статьями')), state=AddArticle.result))
 
 dp.include_router(add_article_dialog)
 dp.include_router(start_dialog)

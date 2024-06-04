@@ -10,6 +10,8 @@ from aiogram_dialog.widgets.text import Const, Format
 from app import dp
 from commands.state_classes import PointCreate
 from core.text import dialogs
+from models import command
+from repositories.command_repository import command_repository
 from repositories.point_repository import point_repository
 from schemas.point_request import PointRequest
 from utils.database import db_async_session_manager
@@ -29,7 +31,7 @@ waste_select = Multiselect(
 categories = ['Бумага📃',
               'Пластик🔫',
               'Стекло🍾',
-              'Металл⚙️',
+              'Металл🔧',
               'Одежда🎩',
               'Лампочки💡',
               'Крышечки🔴',
@@ -37,7 +39,7 @@ categories = ['Бумага📃',
               'Батареки🪫',
               'Шины🛞',
               'Опасное☢',
-              'Другое']
+              'Другое ']
 
 
 async def get_data(**kwargs):
@@ -77,22 +79,25 @@ async def process_categories(callback: CallbackQuery, button: Button, manager: D
 async def save(callback: CallbackQuery, button: Button, manager: DialogManager):
     manager.dialog_data['author'] = f'@{callback.from_user.username}'
     dct = manager.dialog_data
+    async with db_async_session_manager() as session:
+        await command_repository.create_point(session, command.Command(name="point_request",
+                                                                       user=callback.from_user.username))
 
     async with db_async_session_manager() as session:
         await point_repository.create_point(session, PointRequest(lat=None, lon=None, **dct))
     await manager.next()
 
 
-dialog = Dialog(Window(Const("Отправьте название точки"), Cancel(Const("Отмена")), MessageInput(insert_title),
+dialog = Dialog(Window(Const("Отправьте название точки"), Cancel(Const("Отмена❌")), MessageInput(insert_title),
                        state=PointCreate.title),
                 Window(Const("Отправьте описание точки"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")), MessageInput(insert_description),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")), MessageInput(insert_description),
                        state=PointCreate.description),
                 Window(Const("Отправьте адрес точки аналогично\nНижневартовск, Маршала Жукова, 6А"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                        MessageInput(insert_adress), state=PointCreate.address),
                 Window(Const("Отправьте номер телефона  по которому можно связаться с работниками точки"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                        MessageInput(insert_phone), state=PointCreate.phone_number),
                 Window(
                     Const("Выберите виды мусора для сортировки"),
@@ -110,9 +115,9 @@ dialog = Dialog(Window(Const("Отправьте название точки"), 
 Принимается: {dialog_data[types_of_garbage]}
 
 Номер телефона: {dialog_data[phone_number]}"""),
-                       Cancel(Const("Отмена")), Back(Const("Назад")),
-                       Button(Const("Подтвердить"), id="approve", on_click=save), state=PointCreate.sure),
-                Window(Const('Запрос на добавление точки отправлен успешно!'), Cancel(Const("Главное меню")),
+                       Cancel(Const("Отмена❌")), Back(Const("Назад⬅️")),
+                       Button(Const("Подтвердить✅"), id="approve", on_click=save), state=PointCreate.sure),
+                Window(Const('Запрос на добавление точки отправлен успешно!'), Cancel(Const("Главное меню🏠")),
                        state=PointCreate.save)
                 )
 

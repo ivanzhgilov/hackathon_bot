@@ -19,7 +19,7 @@ async def on_dialog_start(start_data: Any, manager: DialogManager):
 
 
 dialog = Dialog(Window(Format('{dialog_data[text]}'),
-                       Cancel(Const("Главное меню")), state=EcoPiggyBank.show),
+                       Cancel(Const("Главное меню🏠")), state=EcoPiggyBank.show),
                 on_start=on_dialog_start)
 
 dp.include_router(dialog)

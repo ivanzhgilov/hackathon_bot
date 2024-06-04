@@ -6,7 +6,7 @@ from typing import Any
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager, Dialog, Window
-from aiogram_dialog.widgets.kbd import Button, Back, Cancel, Select, Column
+from aiogram_dialog.widgets.kbd import Back, Cancel, Select, Column
 from aiogram_dialog.widgets.text import Const, Format
 from transliterate import translit
 
@@ -22,11 +22,6 @@ commands_dir = os.path.dirname(os.path.abspath(__file__))
 
 @dp.callback_query(F.data == "articles_start")
 async def articles_restart(callback: CallbackQuery, manager: DialogManager):
-    await manager.start(ArticleChoose.choosing_article)
-
-
-async def articles_start(callback: CallbackQuery, button: Button,
-                         manager: DialogManager):
     await manager.start(ArticleChoose.choosing_article)
 
 
@@ -67,10 +62,10 @@ kbd = Select(
 
 dialog = Dialog(Window(Const('Выберете статью'),
                        Column(kbd,
-                              Cancel(Const("Главное меню"))), state=ArticleChoose.choosing_article, getter=get_data),
+                              Cancel(Const("Главное меню🏠"))), state=ArticleChoose.choosing_article, getter=get_data),
                 Window(Format('{dialog_data[text]}'),
-                       Back(Const("Назад")),
-                       Cancel(Const("Главное меню")), state=ArticleChoose.sending_article
+                       Back(Const("Назад⬅️")),
+                       Cancel(Const("Главное меню🏠")), state=ArticleChoose.sending_article
                        ))
 
 dp.include_router(dialog)

@@ -2,14 +2,14 @@ dialogs = {
     'intro': {
         'start': {
             'hello': 'Привет! Ты попал в чат бота АО «Югра-Экология» '
-                     'Здесь ты можешь получить информацию о точках раздельного сбора мусора твоего города и '
-                     'узнать как правильно сортировать мусор.',
+                     'Здесь ты можешь получить информацию о точках раздельного сбора отходов на переработку твоего города и '
+                     'узнать как правильно сортировать отходы.',
 
             'usage_statistic': 'Скибиди доб доб',
             # лучше стараться избегать формулировок, где нужно склонение с числительными
 
             'confirm_button': 'Поехали заполнять!',
-            'points_of_city_button': 'Точки моего города',
+            'points_of_city_button': 'Пункты приема',
             'eco_lesson_button': 'Экоурок',
             'recycling_tips_button': 'Справочник отходов',
             'eco_piggy_bank_button': 'ЭКО-копилка',
@@ -30,13 +30,29 @@ dialogs = {
 }
 
 
-def get_point_text(closest_point):
+async def get_point_text(closest_point):
     return f"""{closest_point['title']}
         
 {closest_point['description']}
 
 {closest_point['address']}
+Номер телефона: {closest_point['phone_number']}
 
-Принимается: {', '.join(closest_point['types_of_garbage'])}
+{closest_point['schedule']}
 
-Номер телефона: {closest_point['phone_number']}"""
+Принимается:
+{closest_point['types_of_garbage']}"""
+
+
+async def get_point_request_text(point):
+    return f"""{point.title}
+
+{point.description}
+
+{point.address}
+
+Принимается: {point.types_of_garbage}
+
+Номер телефона: {point.phone_number}
+
+Автор запроса: {point.author}"""

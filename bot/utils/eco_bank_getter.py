@@ -35,7 +35,7 @@ async def text_top_schools(count=10, count_detail=0,
             if len(schools[i]["groups"].keys()) != count_grops + 1 and mass_grops < schools[i]["groups"]["Итого"]:
                 text += f'\tПрочее: {round(schools[i]["groups"]["Итого"] - mass_grops, 2)} {unit}\n'
 
-        text += f'\tИтого: {round(schools[i]["groups"]["Итого"], 2)} {unit}\n\n'
+        text += f'\tВсего сдано: {round(schools[i]["groups"]["Итого"], 2)} {unit}\n\n'
 
     return text
 

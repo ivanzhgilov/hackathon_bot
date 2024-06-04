@@ -6,7 +6,7 @@ from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import Dialog, Window, DialogProtocol, DialogManager
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Cancel, Back, Column, Multiselect, Button
+from aiogram_dialog.widgets.kbd import Cancel, Back, Multiselect, Button
 from aiogram_dialog.widgets.text import Const, Format
 
 from app import dp
@@ -29,7 +29,7 @@ waste_select = Multiselect(
 categories = ['Бумага📃',
               'Пластик🔫',
               'Стекло🍾',
-              'Металл⚙️',
+              'Металл🔧',
               'Одежда🎩',
               'Лампочки💡',
               'Крышечки🔴',
@@ -76,6 +76,16 @@ async def insert_cords(message: Message, dialog: DialogProtocol, manager: Dialog
     await manager.next()
 
 
+async def insert_waste(message: Message, dialog: DialogProtocol, manager: DialogManager):
+    manager.dialog_data["types_of_garbage"] = message.text
+    await manager.next()
+
+
+async def insert_schedule(message: Message, dialog: DialogProtocol, manager: DialogManager):
+    manager.dialog_data["schedule"] = message.text
+    await manager.next()
+
+
 async def process_categories(callback: CallbackQuery, button: Button, manager: DialogManager):
     chosen = [categories[int(i)][:-1] for i in waste_select.get_checked(manager)]
     manager.dialog_data['types_of_garbage'] = chosen
@@ -85,51 +95,52 @@ async def process_categories(callback: CallbackQuery, button: Button, manager: D
 async def save(callback: CallbackQuery, button: Button, manager: DialogManager):
     with open(os.path.join(commands_dir, 'points.json'), encoding='utf-8') as file:
         points = json.load(file)
-    city = await get_city(manager.dialog_data["coordinates"]["lat"], manager.dialog_data["coordinates"]["lon"])
-    if points.get(city):
-        points[city].append(manager.dialog_data)
-    else:
-        points[city] = []
-        points[city].append(manager.dialog_data)
+    points.append(manager.dialog_data)
     with open(os.path.join(commands_dir, 'points.json'), "w", encoding='utf-8') as file:
-        json.dump(points, file, indent=4)
+        json.dump(points, file, indent=4, ensure_ascii=False)
     await manager.next()
 
 
-dialog = Dialog(Window(Const("Отправьте название точки"), Cancel(Const("Отмена")), MessageInput(insert_title),
+dialog = Dialog(Window(Const("Отправьте название точки"), Cancel(Const("Отмена❌")), MessageInput(insert_title),
                        state=AdminPointCreate.title),
                 Window(Const("Отправьте описание точки"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")), MessageInput(insert_description),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")), MessageInput(insert_description),
                        state=AdminPointCreate.description),
                 Window(Const("Отправьте адрес точки аналогично\nНижневартовск, Маршала Жукова, 6А"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                        MessageInput(insert_adress), state=AdminPointCreate.address),
-                Window(Const("Отправьте номер телефона  по которому можно связаться с работниками точки"),
-                       Back(Const("Назад")), Cancel(Const("Отмена")),
+                Window(Const("Отправьте номер телефона по которому можно связаться с работниками точки"),
+                       Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                        MessageInput(insert_phone), state=AdminPointCreate.phone_number),
                 Window(
-                    Const("Выберите виды мусора для сортировки"),
-                    Button(Const("Категории выбраны✔️"), id="all_done", on_click=process_categories),
-                    Column(waste_select),
-                    Back(Const("Назад")), Cancel(Const("Отмена")),
-                    getter=get_data,
+                    Const(
+                        "Отправьте перечень вторсырья, которое принимается в пункте.\nКак образец можете взять перечень по ссылке https://vk.com/@eco4u2-set-ekocentrov-ugra-sobiraet"),
+                    Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")), MessageInput(insert_waste),
                     state=AdminPointCreate.types_of_garbage
+                ),
+                Window(
+                    Const(
+                        "Отправьте расписание по которому работает пункт. Оно должно выглядеть примерно так:\nЕжедневно 10:00 - 20:00\nОбед 14:00 - 15:00\nТех. перерывы 11:45 - 12:00 / 16:45 - 17:00"),
+                    Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")), MessageInput(insert_schedule),
+                    state=AdminPointCreate.schedule
                 ),
                 Window(Const(
                     "Отправьте координаты вида <b>55.756265512853076,37.542354827164544</b> (можете взять координаты с сайта https://snipp.ru/tools/address-coord"),
-                    Back(Const("Назад")), Cancel(Const("Отмена")),
+                    Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                     MessageInput(insert_cords), state=AdminPointCreate.cords),
                 Window(Format("""{dialog_data[title]}
 
 {dialog_data[description]}
 
 {dialog_data[address]}
+Номер телефона: {dialog_data[phone_number]}
 
-Принимается: {dialog_data[types_of_garbage]}
+{dialog_data[schedule]}
 
-Номер телефона: {dialog_data[phone_number]}"""),
-                       Cancel(Const("Отмена")), Back(Const("Назад")),
-                       Button(Const("Подтвердить"), id="approve", on_click=save), state=AdminPointCreate.sure),
+Принимается:
+{dialog_data[types_of_garbage]}"""),
+                       Cancel(Const("Отмена❌")), Back(Const("Назад⬅️")),
+                       Button(Const("Подтвердить✅"), id="approve", on_click=save), state=AdminPointCreate.sure),
                 Window(Const('Точка добавлена успешно!'), Cancel(Const("Меню администратора")),
                        state=AdminPointCreate.save)
                 )

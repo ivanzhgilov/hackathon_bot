@@ -6,16 +6,15 @@ from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import DialogManager, Dialog, Window, DialogProtocol
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Back, Cancel, Button
+from aiogram_dialog.widgets.kbd import Back, Cancel, Button, Url
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
 from sqlalchemy import select
 
 from app import dp, bot
-from commands.state_classes import CreatingNewsletter
+from commands.state_classes import CreatingNewsletter, Links
 from core.text import dialogs
 from models import User
-from schemas.user import UserShort
 from utils.database import db_async_session_manager
 
 intro_dialogs = dialogs['intro']
@@ -49,15 +48,23 @@ async def approve_newsletter(callback: CallbackQuery, button: Button, manager: D
     await manager.next()
 
 
-dialog = Dialog(Window(Const('Введите текст нововсти'), Cancel(Const("Отмена")),
+dialog = Dialog(Window(Const('Введите текст новости'), Cancel(Const("Отмена❌")),
                        MessageInput(insert_text), state=CreatingNewsletter.text_insert),
-                Window(Const('Отправьте фото'), Back(Const("Назад")), Cancel(Const("Отмена")),
+                Window(Const('Отправьте фото'), Back(Const("Назад⬅️")), Cancel(Const("Отмена❌")),
                        MessageInput(insert_media), state=CreatingNewsletter.media_insert),
                 Window(Format("{dialog_data[text]}"),
                        DynamicMedia("photo"),
-                       Button(Const("Подтвердить"), id="approve_newsletter", on_click=approve_newsletter),
-                       Back(Const("Назад")),
-                       Cancel(Const("Главное меню")), state=CreatingNewsletter.sure, getter=get_data),
+                       Button(Const("Подтвердить✅"), id="approve_newsletter", on_click=approve_newsletter),
+                       Back(Const("Назад⬅️")),
+                       Cancel(Const("Главное меню🏠")), state=CreatingNewsletter.sure, getter=get_data),
                 Window(Const("Успешно!"), Cancel(Const('В меню администратора')), state=CreatingNewsletter.result))
 
+subdialog = Dialog(
+    Window(Const('Полезные ссылки'), Url(Const("ВКонтакте"), Const("https://vk.com/eco4u2https://vk.com/eco4u2")),
+           Url(Const("Телеграм"), Const("https://t.me/yugraecology")),
+           Url(Const("Одноклассники"), Const("https://ok.ru/group/55933980573950")),
+           Url(Const("Сайт Югра Собирает"), Const("https://sobiraet.yugra-ecology.ru/")),
+           Cancel(Const("Главное меню🏠")), state=Links.links))
+
 dp.include_router(dialog)
+dp.include_router(subdialog)

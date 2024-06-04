@@ -7,10 +7,11 @@ from aiogram_dialog.widgets.kbd import Button, Row, Column, Url
 from aiogram_dialog.widgets.text import Const
 
 from app import dp
-from articles import articles_start
-from commands.state_classes import MainMenu, AdminMenu, PointCreate, EcoPiggyBank
+from commands.state_classes import MainMenu, AdminMenu, PointCreate, EcoPiggyBank, GetClosestPoint, ArticleChoose, \
+    Links
 from core.text import dialogs
-from points_of_my_city import points_of_city_start
+from repositories.command_repository import command_repository
+from schemas import command
 from schemas.user import UserInit
 from services.account_service import account_service
 from services.statistic_service import statistic_service
@@ -47,9 +48,36 @@ async def point_request_start(callback: CallbackQuery, button: Button,
     await manager.start(PointCreate.title)
 
 
-async def eco_bankt_start(callback: CallbackQuery, button: Button,
-                          manager: DialogManager):
+async def eco_bank_start(callback: CallbackQuery, button: Button,
+                         manager: DialogManager):
+    async with db_async_session_manager() as session:
+        await command_repository.create_point(session, command.Command(name="eco_bank",
+                                                                       user=callback.from_user.username))
     await manager.start(EcoPiggyBank.show)
+
+
+async def points_of_city_start(callback: CallbackQuery, button: Button,
+                               manager: DialogManager):
+    async with db_async_session_manager() as session:
+        await command_repository.create_point(session, command.Command(name="points_of_city",
+                                                                       user=callback.from_user.username))
+    await manager.start(GetClosestPoint.getting_cords)
+
+
+async def articles_start(callback: CallbackQuery, button: Button,
+                         manager: DialogManager):
+    async with db_async_session_manager() as session:
+        await command_repository.create_point(session, command.Command(name="articles",
+                                                                       user=callback.from_user.username))
+    await manager.start(ArticleChoose.choosing_article)
+
+
+async def useful_links_start(callback: CallbackQuery, button: Button,
+                             manager: DialogManager):
+    async with db_async_session_manager() as session:
+        await command_repository.create_point(session, command.Command(name="useful_links",
+                                                                       user=callback.from_user.username))
+    await manager.start(Links.links)
 
 
 class IntroActionKinds(str, enum.Enum):
@@ -65,12 +93,13 @@ main_window = Window(
     Const(intro_dialogs['start']['hello']),
     Column(Button(Const(intro_dialogs['start']['points_of_city_button']), id='points_of_city',
                   on_click=points_of_city_start),
-           Button(Const(intro_dialogs['start']['recycling_tips_button']), id='recycling_tips', on_click=articles_start),
-           Button(Const("Предожить точку"), id='point_request', on_click=point_request_start)),
+           Button(Const(intro_dialogs['start']['recycling_tips_button']), id='recycling_tips',
+                  on_click=articles_start)),
     Row(Url(Const(intro_dialogs['start']['eco_lesson_button']), Const("https://sobiraet.yugra-ecology.ru/form")),
-        Button(Const(intro_dialogs['start']['eco_piggy_bank_button']), id='eco_piggy_bank', on_click=eco_bankt_start),
-        Button(Const(intro_dialogs['start']['useful_links_button']), id='useful_links')),
-
+        Button(Const(intro_dialogs['start']['eco_piggy_bank_button']), id='eco_piggy_bank',
+               on_click=eco_bank_start),
+        Button(Const(intro_dialogs['start']['useful_links_button']), id='useful_links',
+               on_click=useful_links_start)),
     state=MainMenu.main,
 )
 
