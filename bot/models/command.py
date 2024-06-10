@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import String, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from models.core import Base, TimestampMixin
@@ -9,4 +9,6 @@ class Command(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(256))
-    user: Mapped[str] = mapped_column(String(256))
+    chat_id: Mapped[int] = mapped_column(
+        BigInteger()
+    )

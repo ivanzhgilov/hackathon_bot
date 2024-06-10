@@ -5,6 +5,7 @@ from aiogram_dialog.widgets.kbd import Button, Column, Cancel
 from aiogram_dialog.widgets.text import Const
 from sqlalchemy import select
 
+from admin_delete_point import start_point_delete
 from commands.state_classes import AdminMenu, ArticleManage, CreatingNewsletter, AdminPointCreate, \
     AdminPointRequestsWatching, MainMenu, GetStats
 from core.text import dialogs
@@ -59,6 +60,7 @@ admin_router = Dialog(Window(
         Button(Const(admin_dialogs['manage_articles_button']), id='manage_articles', on_click=manage_articles_start),
         Button(Const(admin_dialogs['post_news_button']), id='post_news', on_click=newsletter_start),
         Button(Const("Добавить точку"), id='admin_add_point', on_click=admin_point_add_start),
+        Button(Const("Удалить точку"), id='admin_delete_point', on_click=start_point_delete),
         Button(Const(admin_dialogs['get_statistic_button']),
                id='get_statistic', on_click=get_statistic),
         Button(Const("Главное меню🏠"), id="main_menu", on_click=main_menu)),

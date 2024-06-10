@@ -45,6 +45,13 @@ class ArticleEdit(StatesGroup):
     result = State()
 
 
+class PointDelete(StatesGroup):
+    choosing = State()
+    managing = State()
+    sure = State()
+    result = State()
+
+
 class EcoPiggyBank(StatesGroup):
     show = State()
 

@@ -81,7 +81,7 @@ async def save(callback: CallbackQuery, button: Button, manager: DialogManager):
     dct = manager.dialog_data
     async with db_async_session_manager() as session:
         await command_repository.create_point(session, command.Command(name="point_request",
-                                                                       user=callback.from_user.username))
+                                                                       user=callback.from_user.chat_id))
 
     async with db_async_session_manager() as session:
         await point_repository.create_point(session, PointRequest(lat=None, lon=None, **dct))

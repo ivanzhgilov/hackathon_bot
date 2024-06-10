@@ -23,15 +23,26 @@ intro_dialogs = dialogs['intro']
 @dp.message(Command("start"))
 async def start(message: Message, dialog_manager: DialogManager):
     async with db_async_session_manager() as session:
-        await account_service.register_account(
-            session, UserInit(
-                chat_id=message.from_user.id,
-                login=message.from_user.username,
-                name=message.from_user.first_name,
-                surname=message.from_user.last_name,
-                admin=False
+        if message.from_user.username:
+            await account_service.register_account(
+                session, UserInit(
+                    chat_id=message.from_user.id,
+                    login=message.from_user.username,
+                    name=message.from_user.first_name,
+                    surname="None",
+                    admin=False
+                )
             )
-        )
+        else:
+            await account_service.register_account(
+                session, UserInit(
+                    chat_id=message.from_user.id,
+                    login="None",
+                    name=message.from_user.first_name,
+                    surname="None",
+                    admin=False
+                )
+            )
 
         stat = await statistic_service.active_statistic(session)
 
@@ -52,7 +63,7 @@ async def eco_bank_start(callback: CallbackQuery, button: Button,
                          manager: DialogManager):
     async with db_async_session_manager() as session:
         await command_repository.create_point(session, command.Command(name="eco_bank",
-                                                                       user=callback.from_user.username))
+                                                                       chat_id=callback.message.chat.id))
     await manager.start(EcoPiggyBank.show)
 
 
@@ -60,7 +71,7 @@ async def points_of_city_start(callback: CallbackQuery, button: Button,
                                manager: DialogManager):
     async with db_async_session_manager() as session:
         await command_repository.create_point(session, command.Command(name="points_of_city",
-                                                                       user=callback.from_user.username))
+                                                                       chat_id=callback.message.chat.id))
     await manager.start(GetClosestPoint.getting_cords)
 
 
@@ -68,7 +79,7 @@ async def articles_start(callback: CallbackQuery, button: Button,
                          manager: DialogManager):
     async with db_async_session_manager() as session:
         await command_repository.create_point(session, command.Command(name="articles",
-                                                                       user=callback.from_user.username))
+                                                                       chat_id=callback.message.chat.id))
     await manager.start(ArticleChoose.choosing_article)
 
 
@@ -76,7 +87,7 @@ async def useful_links_start(callback: CallbackQuery, button: Button,
                              manager: DialogManager):
     async with db_async_session_manager() as session:
         await command_repository.create_point(session, command.Command(name="useful_links",
-                                                                       user=callback.from_user.username))
+                                                                       chat_id=callback.message.chat.id))
     await manager.start(Links.links)
 
 

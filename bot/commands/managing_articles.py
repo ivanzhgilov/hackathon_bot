@@ -36,7 +36,7 @@ async def delete_article(callback, button, manager):
     articles = manager.dialog_data['articles']
     del articles[manager.dialog_data["key"]]
     with open(os.path.join(commands_dir, 'articles.json'), 'w', encoding='utf-8') as file:
-        json.dump(articles, file, indent=4)
+        json.dump(articles, file, indent=4, ensure_ascii=False)
     await manager.next()
 
 
@@ -96,12 +96,12 @@ kbd = Select(
 )
 
 start_dialog = Dialog(Window(Const('Выберите опцию'),
-                             Button(Const('Редактировать статьи'), on_click=edit_articles_start,
+                             Button(Const('Удалить статью'), on_click=edit_articles_start,
                                     id='edit_articles_start'),
                              Button(Const('Добавить статью'), on_click=add_article_start, id='add_article_start'),
                              Cancel(Const("Меню администратора")), state=ArticleManage.start))
 
-edit_article_dialog = Dialog(Window(Const('Выберите стаью'),
+edit_article_dialog = Dialog(Window(Const('Выберите статью'),
                                     Column(kbd,
                                            Cancel(Const("Назад⬅️"))), state=ArticleEdit.choosing, getter=get_data),
                              Window(Format('{dialog_data[text]}'),

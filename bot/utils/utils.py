@@ -20,9 +20,9 @@ async def count_active_users(commands):
     lst = []
     c = 0
     for command in commands:
-        if command.user not in lst:
+        if command.chat_id not in lst:
             c += 1
-            lst.append(command.user)
+            lst.append(command.chat_id)
     return c
 
 
@@ -33,9 +33,7 @@ async def command_usage(commands):
     articles = 0
     useful_links = 0
     for command in commands:
-        if command.name == "point_request":
-            point_request += 1
-        elif command.name == "eco_bank":
+        if command.name == "eco_bank":
             eco_bank += 1
         elif command.name == "points_of_city":
             points_of_city += 1
