@@ -59,12 +59,12 @@ async def send_message_to_all_users(bot: Bot, message):
 async def get_poster(last_post):
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
         token = "95dee14b95dee14b95dee14b0f96c6c94b995de95dee14bf3f0b14bc725dd7241b71737"
-        url = f"https://api.vk.com/method/wall.get?access_token={token}&v=5.199&domain=club226098672&count=1"
+        url = f"https://api.vk.com/method/wall.get?access_token={token}&v=5.199&domain=eco4u2&count=1"
         async with session.get(url) as post:
             data = await post.json()
 
             post_text = data["response"]["items"][0]["text"]
-            link = "https://vk.com/club226098672"
+            link = "https://vk.com/eco4u2"
 
             if (post_text, link) != last_post:
                 return post_text, link

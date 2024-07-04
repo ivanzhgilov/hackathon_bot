@@ -18,6 +18,18 @@ services:
 
     networks:
       - local_net
+  telegram_bot:
+    build: .
+    restart: always
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=database
+    depends_on:
+      - database
+    networks:
+      - local_net
 
 networks:
   local_net:

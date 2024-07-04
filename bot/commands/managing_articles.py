@@ -12,9 +12,10 @@ from aiogram_dialog.widgets.text import Const, Format
 from transliterate import translit
 
 from app import dp
-from articles import commands_dir
 from commands.state_classes import ArticleManage, ArticleEdit, AddArticle
 from core.text import dialogs
+
+commands_dir = os.path.dirname(os.path.abspath(__file__))
 
 intro_dialogs = dialogs['intro']
 managing_articles_router = Router(name='managing_articles')

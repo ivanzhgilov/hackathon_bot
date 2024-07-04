@@ -10,16 +10,13 @@ from aiogram_dialog.widgets.kbd import Cancel, Button, Back, Row, Column, Select
 from aiogram_dialog.widgets.text import Const, Format
 
 from app import dp
-from articles import commands_dir
 from commands.state_classes import PointDelete
 from core.text import dialogs, get_point_text
 
+commands_dir = os.path.dirname(os.path.abspath(__file__))
+
 intro_dialogs = dialogs['intro']
 delete_point_router = Router(name='delete_point')
-
-
-async def start_point_delete(callback, button, manager):
-    await manager.start(PointDelete.choosing)
 
 
 async def start_delete_article(callback, button, manager):

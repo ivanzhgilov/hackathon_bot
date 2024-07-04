@@ -60,7 +60,7 @@ dialog = Dialog(Window(Const('Введите текст новости'), Cancel
                 Window(Const("Успешно!"), Cancel(Const('В меню администратора')), state=CreatingNewsletter.result))
 
 subdialog = Dialog(
-    Window(Const('Полезные ссылки'), Url(Const("ВКонтакте"), Const("https://vk.com/eco4u2https://vk.com/eco4u2")),
+    Window(Const('Полезные ссылки'), Url(Const("ВКонтакте"), Const("https://vk.com/eco4u2")),
            Url(Const("Телеграм"), Const("https://t.me/yugraecology")),
            Url(Const("Одноклассники"), Const("https://ok.ru/group/55933980573950")),
            Url(Const("Сайт Югра Собирает"), Const("https://sobiraet.yugra-ecology.ru/")),

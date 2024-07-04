@@ -5,20 +5,19 @@ from aiogram import Bot
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from aiogram_dialog import setup_dialogs
 
-import admin_point_create
-from admin_delete_point import delete_point_router
-from admin_menu import admin_router
-from admin_point_requests_watching import points_managing_router
+from commands.admin_delete_point import delete_point_router
+from commands.admin_menu import admin_router
+from commands.admin_point_create import admin_point_create_router
 from app import dp, bot
-from articles import article_router
+from commands.articles import article_router
+from core.config import config
 from commands.intro import intro_router
 from commands.points_of_my_city import points_of_city_router
-from core.config import config
-from eco_piggy_bank import eco_bank_router
-from get_stats import stats_router
-from managing_articles import managing_articles_router
-from newsletter import newsletter_router
-from point_create import point_create_router
+from commands.eco_piggy_bank import eco_bank_router
+from commands.get_stats import stats_router
+from commands.managing_articles import managing_articles_router
+from commands.newsletter import newsletter_router
+from commands.point_create import point_create_router
 from utils.utils import setup_logging, get_poster, send_message_to_all_users
 
 logger = logging.getLogger('startup')
@@ -47,8 +46,7 @@ async def main(bot) -> None:
         point_create_router,
         eco_bank_router,
         newsletter_router,
-        admin_point_create.admin_point_create_router,
-        points_managing_router,
+        admin_point_create_router,
         stats_router,
         delete_point_router
     )

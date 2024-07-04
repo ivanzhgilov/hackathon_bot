@@ -10,11 +10,12 @@ from app import dp
 from commands.state_classes import MainMenu, AdminMenu, PointCreate, EcoPiggyBank, GetClosestPoint, ArticleChoose, \
     Links
 from core.text import dialogs
+from repositories.admin_password_repository import password_repository
 from repositories.command_repository import command_repository
 from schemas import command
+from schemas.admin_password import AdminPassword
 from schemas.user import UserInit
 from services.account_service import account_service
-from services.statistic_service import statistic_service
 from utils.database import db_async_session_manager
 
 intro_dialogs = dialogs['intro']
@@ -43,8 +44,8 @@ async def start(message: Message, dialog_manager: DialogManager):
                     admin=False
                 )
             )
-
-        stat = await statistic_service.active_statistic(session)
+        await password_repository.create_point(session, AdminPassword(
+            password="$argon2id$v=19$m=65536,t=3,p=4$TAsLRMUhXkRf9N5bAB5Saw$/LeN+tSQCsFq9k+bsNA9pisByIdDBXVnoNf/qMZso+w"))
 
     await dialog_manager.start(MainMenu.main)
 

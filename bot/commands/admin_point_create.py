@@ -12,7 +12,6 @@ from aiogram_dialog.widgets.text import Const, Format
 from app import dp
 from commands.state_classes import AdminPointCreate
 from core.text import dialogs
-from utils.utils import get_city
 
 intro_dialogs = dialogs['intro']
 admin_point_create_router = Router(name='admin_point_create')

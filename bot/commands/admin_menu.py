@@ -5,15 +5,18 @@ from aiogram_dialog.widgets.kbd import Button, Column, Cancel
 from aiogram_dialog.widgets.text import Const
 from sqlalchemy import select
 
-from admin_delete_point import start_point_delete
 from commands.state_classes import AdminMenu, ArticleManage, CreatingNewsletter, AdminPointCreate, \
-    AdminPointRequestsWatching, MainMenu, GetStats
+    AdminPointRequestsWatching, MainMenu, GetStats, PointDelete
 from core.text import dialogs
 from models import AdminPassword
 from utils.database import db_async_session_manager
 from utils.utils import check_password
 
 admin_dialogs = dialogs['admin']
+
+
+async def start_point_delete(callback, button, manager):
+    await manager.start(PointDelete.choosing)
 
 
 async def password_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):

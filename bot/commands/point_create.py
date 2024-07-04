@@ -15,7 +15,6 @@ from repositories.command_repository import command_repository
 from repositories.point_repository import point_repository
 from schemas.point_request import PointRequest
 from utils.database import db_async_session_manager
-from utils.utils import get_coordinates_by_address
 
 intro_dialogs = dialogs['intro']
 point_create_router = Router(name='point_create')
