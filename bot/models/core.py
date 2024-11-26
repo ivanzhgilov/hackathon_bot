@@ -20,9 +20,6 @@ class TimestampMixin:
 
 @declarative_mixin
 class SoftDeleteMixin:
-    """
-    Фильтрация удалённых объектов на совести использующего этот миксин
-    """
     deleted_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=False),
         nullable=True,

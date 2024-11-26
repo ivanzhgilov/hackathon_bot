@@ -9,11 +9,10 @@ class User(Base, TimestampMixin):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str | None] = mapped_column(String(256))
-    surname: Mapped[str | None] = mapped_column(String(256))
-    login: Mapped[str | None] = mapped_column(String(256))
+    name: Mapped[str | None] = mapped_column(String(256), default=None)
+    login: Mapped[str | None] = mapped_column(String(256), unique=True)
+    hashed_password: Mapped[str | None] = mapped_column(String(256), default=None)
+    login_status: Mapped[bool] = mapped_column(default=False)
     chat_id: Mapped[int] = mapped_column(
         BigInteger(), index=True, unique=True
-    )  # у telegram года так с 22го для id пользователей используется int64
-    about: Mapped[dict | None] = mapped_column(JSONB())
-    admin: Mapped[bool] = mapped_column(default=False)
+    )

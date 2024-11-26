@@ -10,13 +10,31 @@ class AdminMenu(StatesGroup):
     admin_operations = State()
 
 
-class GetClosestPoint(StatesGroup):
-    getting_cords = State()
+class LogIn(StatesGroup):
+    login = State()
+    password = State()
 
 
-class ArticleChoose(StatesGroup):
-    choosing_article = State()
-    sending_article = State()
+class Entry(StatesGroup):
+    entry = State()
+
+
+class AccountMainPage(StatesGroup):
+    main = State()
+
+
+class MyRequests(StatesGroup):
+    requests = State()
+
+
+class CreateRequest(StatesGroup):
+    question = State()
+
+
+class SignIn(StatesGroup):
+    login = State()
+    password = State()
+    password_confirm = State()
 
 
 class ArticleSender(StatesGroup):
