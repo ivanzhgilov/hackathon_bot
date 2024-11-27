@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import User
-from schemas.user import UserInit, UserAccount
+from schemas.user import UserInit, UserAccount, UserShort
 from utils.utils import to_snake, hash_password
 
 
@@ -39,15 +39,14 @@ class UserRepository:
         self.logger.info(f'Found user logins: {logins}')
         return list(logins)
 
-    async def get_user_by_chat_id(self, session: AsyncSession, chat_id: int) -> UserAccount | None:
+    async def get_user_by_chat_id(self, session: AsyncSession, chat_id: int) -> UserShort | None:
         self.logger.debug(f'fetching user with chat_id: {chat_id}')
         fetched = await session.scalar(select(User).where(User.chat_id == chat_id))
         if not fetched:
             self.logger.debug(f'user not found by chat_id: {chat_id}')
             return None
-        obj = UserAccount.model_validate(fetched)
-        self.logger.info(f'found by chat_id: {chat_id} - {obj}')
-        return obj
+        self.logger.info(f'found by chat_id: {chat_id} - {fetched}')
+        return fetched
 
     async def update_hashed_password_by_chat_id(self, session: AsyncSession, chat_id: int, password: str) -> bool:
         self.logger.debug(f'Updating hashed_password for user with chat_id: {chat_id}')
@@ -60,19 +59,75 @@ class UserRepository:
         hashed_password = hash_password(password)
 
         user.hashed_password = hashed_password
-        await session.commit()
+        session.add(user)
+        await session.flush([user])
 
         self.logger.info(f'Hashed password updated for user with chat_id: {chat_id}')
         return True
 
-    async def get_user_by_login(self, session: AsyncSession, login: str) -> User | None:
+    async def update_login_status_by_chat_id(self, session: AsyncSession, chat_id: int, login_status: bool) -> bool:
+        self.logger.debug(f'Updating login_status for user with chat_id: {chat_id}')
+
+        # Fetch the user by chat_id
+        user = await self.get_user_by_chat_id(session, chat_id)
+        if not user:
+            self.logger.debug(f'No user found with chat_id: {chat_id}')
+            return False
+
+        # Update the login_status
+        user.login_status = login_status
+        session.add(user)
+        await session.flush([user])
+
+        self.logger.info(f'Login status updated for user with chat_id: {chat_id}')
+        return True
+
+    async def update_hashed_password_by_login(self, session: AsyncSession, login: str, password: str) -> bool:
+        self.logger.debug(f'Updating hashed_password for user with login: {login}')
+
+        # Fetch the user by login
+        user = await self.get_user_by_login(session, login)
+        if not user:
+            self.logger.debug(f'No user found with login: {login}')
+            return False
+
+        # Hash the password
+        hashed_password = hash_password(password)
+
+        # Update the hashed_password
+        user.hashed_password = hashed_password
+        session.add(user)
+        await session.flush([user])
+
+        self.logger.info(f'Hashed password updated for user with login: {login}')
+        return True
+
+    async def update_login_by_chat_id(self, session: AsyncSession, chat_id: int, new_login: str) -> bool:
+        self.logger.debug(f'Updating login for user with chat_id: {chat_id}')
+
+        # Fetch the user by chat_id
+        user = await self.get_user_by_chat_id(session, chat_id)
+        if not user:
+            self.logger.debug(f'No user found with chat_id: {chat_id}')
+            return False
+
+        # Update the login
+        user.login = new_login
+        session.add(user)
+        await session.flush([user])
+
+        self.logger.info(f'Login updated for user with chat_id: {chat_id}')
+        return True
+
+    async def get_user_by_login(self, session: AsyncSession, login: str) -> UserShort | None:
         self.logger.debug(f'fetching user with login: {login}')
         fetched = await session.scalar(select(User).where(User.login == login))
         if not fetched:
             self.logger.debug(f'user not found by login: {login}')
             return None
-        self.logger.info(f'found by login: {login} - {fetched}')
-        return fetched
+        obj = UserShort.model_validate(fetched)
+        self.logger.info(f'found by login: {login} - {obj}')
+        return obj
 
     async def get_user_by_id(self, session: AsyncSession, user_id: int) -> UserAccount | None:
         self.logger.debug(f'fetching user with id: {user_id}')

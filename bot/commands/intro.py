@@ -63,9 +63,9 @@ async def create_request_start(callback: CallbackQuery, button: Button,
 entry_window = Window(
     Const(intro_dialogs['start']['hello']),
     Column(Button(Const(intro_dialogs['start']['sign_in']), id='sign_in',
-                  on_click=log_in_start),
+                  on_click=sign_in_start),
            Button(Const(intro_dialogs['start']['log_in']), id='log_in',
-                  on_click=sign_in_start)),
+                  on_click=log_in_start)),
     state=Entry.entry,
 )
 
@@ -75,5 +75,5 @@ account_window = Window(
            Button(Const(intro_dialogs['start']['create_request']), id='create_request', on_click=create_request_start)),
     state=AccountMainPage.main,
 )
-
 entry_router = Dialog(entry_window)
+account_router = Dialog(account_window)

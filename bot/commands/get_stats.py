@@ -11,7 +11,6 @@ from sqlalchemy import select, func
 from app import dp
 from commands.state_classes import GetStats
 from core.text import dialogs
-from models.command import Command
 from models.user import User
 from utils.database import db_async_session_manager
 from utils.utils import count_active_users, command_usage

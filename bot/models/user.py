@@ -1,5 +1,4 @@
 from sqlalchemy import String, BigInteger
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from models.core import Base, TimestampMixin
