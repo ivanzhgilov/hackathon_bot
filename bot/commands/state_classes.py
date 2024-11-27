@@ -10,6 +10,12 @@ class AdminMenu(StatesGroup):
     admin_operations = State()
 
 
+class CreateRequest(StatesGroup):
+    question = State()
+    answer = State()
+    escalation = State()
+
+
 class LogIn(StatesGroup):
     login = State()
     password = State()
@@ -25,11 +31,6 @@ class AccountMainPage(StatesGroup):
 
 class MyRequests(StatesGroup):
     requests = State()
-
-
-class CreateRequest(StatesGroup):
-    question = State()
-
 
 class SignIn(StatesGroup):
     login = State()

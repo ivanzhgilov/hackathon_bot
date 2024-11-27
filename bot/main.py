@@ -7,6 +7,7 @@ from aiogram_dialog import setup_dialogs
 
 from app import dp, bot
 from commands.admin_menu import admin_router
+from commands.create_request import create_request_router
 from commands.get_stats import stats_router
 from commands.intro import entry_router, account_router
 from commands.log_in import log_in_router
@@ -33,6 +34,7 @@ async def main(bot) -> None:
         sign_in_router,
         log_in_router,
         stats_router,
+        create_request_router,
         account_router
     )
     dp.callback_query.middleware(CallbackAnswerMiddleware())

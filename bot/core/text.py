@@ -9,7 +9,7 @@ dialogs = {
             'confirm_button': 'Поехали заполнять!',
             'sign_in': 'Зарегистрироваться',
             'log_in': 'Войти',
-            'my_requests': 'Мои вопросы',
+            'my_requests': 'Мои заявки',
             'create_request': 'Задать вопрос'
         },
         'about_info': 'Расскажи о себе:',
@@ -30,6 +30,7 @@ dialogs = {
         'no_such_login': 'Такого логина не существует, попробуйте другой.',
         'wrong_password': 'Неверный пароль, попробуйте снова.'
     },
+    'creating_request': {'request_start': 'Отправьте интересующий вас вопрос'},
     'admin': {
         'manage_articles_button': 'Управлять статьями',
         'post_news_button': 'Выложить новость',

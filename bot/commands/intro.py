@@ -18,7 +18,6 @@ intro_dialogs = dialogs['intro']
 
 @dp.message(Command("start"))
 async def start(message: Message, dialog_manager: DialogManager):
-    # TODO: починить авторегу пользователя в бд вместо этого ебучего костыля или вобще сделать регу как в тз по логину и паролю
     async with db_async_session_manager() as session:
         await account_service.register_account(
             session, UserInit(
