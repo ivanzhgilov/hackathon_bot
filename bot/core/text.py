@@ -31,6 +31,7 @@ dialogs = {
         'wrong_password': 'Неверный пароль, попробуйте снова.'
     },
     'creating_request': {'request_start': 'Отправьте интересующий вас вопрос'},
+    'my_requests': {'main_page': 'Ваши заявки:'},
     'admin': {
         'manage_articles_button': 'Управлять статьями',
         'post_news_button': 'Выложить новость',

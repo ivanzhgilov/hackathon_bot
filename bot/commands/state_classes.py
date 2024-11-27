@@ -31,6 +31,12 @@ class AccountMainPage(StatesGroup):
 
 class MyRequests(StatesGroup):
     requests = State()
+    request_menu = State()
+
+
+class RequestView(StatesGroup):
+    request = State()
+
 
 class SignIn(StatesGroup):
     login = State()

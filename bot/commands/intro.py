@@ -51,7 +51,9 @@ async def sign_in_start(callback: CallbackQuery, button: Button,
 
 async def my_requests_start(callback: CallbackQuery, button: Button,
                             manager: DialogManager):
-    await manager.start(MyRequests.requests)
+    async with db_async_session_manager() as session:
+        user_id = (await user_repository.get_user_by_chat_id(session, callback.from_user.id)).id
+    await manager.start(MyRequests.requests, data={'user_id': user_id})
 
 
 async def create_request_start(callback: CallbackQuery, button: Button,
