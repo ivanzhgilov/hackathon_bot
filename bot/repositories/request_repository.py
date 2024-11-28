@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Request
@@ -35,6 +35,24 @@ class RequestRepository:
             return []
         self.logger.info(f'Found requests for user with ID {user_id}: {requests}')
         return list(requests)
+
+    async def delete_request_by_id(self, session: AsyncSession, request_id: int) -> bool:
+        self.logger.debug(f'Deleting request with ID: {request_id}')
+
+        # Check if the request exists
+        result = await session.scalars(select(Request).where(Request.id == request_id))
+        request = result.first()
+
+        if not request:
+            self.logger.debug(f'No request found with ID: {request_id}')
+            return False
+
+        # Delete the request
+        await session.execute(delete(Request).where(Request.id == request_id))
+        await session.commit()
+
+        self.logger.info(f'Request with ID {request_id} has been deleted')
+        return True
 
 
 request_repository = RequestRepository()

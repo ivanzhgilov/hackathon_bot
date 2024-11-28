@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.text import Const
 from sqlalchemy import select
 
 from commands.state_classes import AdminMenu, ArticleManage, CreatingNewsletter, AdminPointCreate, \
-    AdminPointRequestsWatching, MainMenu, GetStats, PointDelete
+    AdminPointRequestsWatching, MainMenu, GetStats, RequestDelete
 from core.text import dialogs
 from models import AdminPassword
 from utils.database import db_async_session_manager
@@ -16,7 +16,7 @@ admin_dialogs = dialogs['admin']
 
 
 async def start_point_delete(callback, button, manager):
-    await manager.start(PointDelete.choosing)
+    await manager.start(RequestDelete.choosing)
 
 
 async def password_sent(message: Message, dialog: DialogProtocol, manager: DialogManager):

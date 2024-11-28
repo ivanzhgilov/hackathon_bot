@@ -70,9 +70,7 @@ class ArticleEdit(StatesGroup):
     result = State()
 
 
-class PointDelete(StatesGroup):
-    choosing = State()
-    managing = State()
+class RequestDelete(StatesGroup):
     sure = State()
     result = State()
 

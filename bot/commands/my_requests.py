@@ -8,7 +8,7 @@ from aiogram_dialog.widgets.kbd import Cancel, Select, Column, Button, Back
 from aiogram_dialog.widgets.text import Const, Format
 
 from app import dp
-from commands.state_classes import MyRequests
+from commands.state_classes import MyRequests, RequestDelete
 from core.text import dialogs
 from repositories.request_repository import request_repository
 from utils.database import db_async_session_manager
@@ -51,7 +51,13 @@ async def start_answers(callback: CallbackQuery, button: Button,
 
 async def start_deleting(callback: CallbackQuery, button: Button,
                          manager: DialogManager):
-    pass
+    await manager.start(RequestDelete.sure, data=manager.dialog_data)
+
+
+async def delete_request(callback, button, manager):
+    async with db_async_session_manager() as session:
+        await request_repository.delete_request_by_id(session, manager.start_data['request']['id'])
+    await manager.next()
 
 
 kbd = Select(
@@ -75,4 +81,10 @@ dialog = Dialog(Window(Const(my_requests_text['main_page']),
                        )
                 )
 
+delete_dialog = Dialog(Window(Const('Вы уверены?'),
+                              Button(Const('Удалить'), id='delete_article', on_click=delete_request),
+                              Cancel(Const("Отменить")), state=RequestDelete.sure),
+                       Window(Const("Успешно!"), Cancel(Const('К моим запросам')),
+                              state=RequestDelete.result))
+dp.include_router(delete_dialog)
 dp.include_router(dialog)

@@ -125,9 +125,7 @@ class UserRepository:
         if not fetched:
             self.logger.debug(f'user not found by login: {login}')
             return None
-        obj = UserShort.model_validate(fetched)
-        self.logger.info(f'found by login: {login} - {obj}')
-        return obj
+        return fetched
 
     async def get_user_by_id(self, session: AsyncSession, user_id: int) -> UserAccount | None:
         self.logger.debug(f'fetching user with id: {user_id}')
