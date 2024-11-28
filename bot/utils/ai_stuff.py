@@ -40,25 +40,20 @@ async def ask_gpt(question) -> str:
     return response.choices[0].message.content
 
 
-async def main():
-    set_event_loop_policy(WindowsSelectorEventLoopPolicy())
-    question = input('Введите вопрос: ')
+async def get_ai_answer(question) -> str:
     question_about_category = (f'На основе категорий вопросов, скажи к какой категории относится вопрос {question}.'
                                f' Пиши в таком формате: name: название категории. Вот Категории вопросов:'
                                f' {", ".join(await get_categories())} Если ни одна категория не подходит пиши: name: ошибка')
     category = (await ask_gpt(question_about_category)).split(': ')[1]
-    print(f'Категория вопроса: {category}')
     if 'ошибка' in category:
-        print('Нейросеть не смогла ответить на ваш вопрос')
+        return 'Нейросеть не смогла ответить на ваш вопрос'
     else:
         instruction = await get_instruction(category)
         if instruction:
             question_about_instruction = (f'используя данную инструкцию, напиши ответ на вопрос {question}. Если этой'
                                           f' инструкции недостаточно для ответа на вопрос, пиши'
                                           f' "Нейросеть не смогла ответить на ваш вопрос". Вот инсрукция {instruction}')
-            print(await ask_gpt(question_about_instruction))
+            return await ask_gpt(question_about_instruction)
         else:
-            print('Инструкция не найдена')
+            return 'Инструкция не найдена'
 
-if __name__ == "__main__":
-    run(main())
