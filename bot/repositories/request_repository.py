@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Request
@@ -25,6 +25,26 @@ class RequestRepository:
         await session.flush([request])
 
         return RequestScheme.model_validate(request)
+
+    async def update_request_question_by_id(self, session: AsyncSession, request_id: int, new_question: str) -> bool:
+        self.logger.debug(f'Updating question for request with ID: {request_id}')
+
+        # Check if the request exists
+        result = await session.scalars(select(Request).where(Request.id == request_id))
+        request = result.first()
+
+        if not request:
+            self.logger.debug(f'No request found with ID: {request_id}')
+            return False
+
+        # Update the question
+        await session.execute(
+            update(Request).where(Request.id == request_id).values(question=new_question)
+        )
+        await session.commit()
+
+        self.logger.info(f'Question for request with ID {request_id} has been updated to: {new_question}')
+        return True
 
     async def get_requests_by_user(self, session: AsyncSession, user_id: int) -> List[Request]:
         self.logger.debug(f'Fetching requests for user with ID: {user_id}')

@@ -44,32 +44,6 @@ class SignIn(StatesGroup):
     password_confirm = State()
 
 
-class ArticleSender(StatesGroup):
-    sending_article = State()
-
-
-class ArticleManage(StatesGroup):
-    start = State()
-
-
-class PointCreate(StatesGroup):
-    title = State()
-    description = State()
-    address = State()
-    phone_number = State()
-    types_of_garbage = State()
-    save = State()
-    sure = State()
-    notification = State()
-
-
-class ArticleEdit(StatesGroup):
-    choosing = State()
-    managing = State()
-    sure = State()
-    result = State()
-
-
 class RequestDelete(StatesGroup):
     sure = State()
     result = State()
@@ -86,28 +60,16 @@ class AddArticle(StatesGroup):
     result = State()
 
 
+class AddToRequest(StatesGroup):
+    insert_question = State()
+    confirm = State()
+
+
 class CreatingNewsletter(StatesGroup):
     text_insert = State()
     media_insert = State()
     sure = State()
     result = State()
-
-
-class AdminPointCreate(StatesGroup):
-    title = State()
-    description = State()
-    address = State()
-    phone_number = State()
-    types_of_garbage = State()
-    schedule = State()
-    cords = State()
-    save = State()
-    sure = State()
-    notification = State()
-
-
-class AdminPointRequestsWatching(StatesGroup):
-    points = State()
 
 
 class AdminPointRequestsManaging(StatesGroup):

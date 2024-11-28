@@ -11,6 +11,7 @@ from core.text import dialogs
 from repositories.request_repository import request_repository
 from repositories.user_repository import user_repository
 from schemas.request import RequestScheme
+from utils.ai_stuff import get_ai_answer
 from utils.database import db_async_session_manager
 
 create_request_router = Router(name='create_request_router')
@@ -19,8 +20,7 @@ request_creating_text = dialogs['creating_request']
 
 
 async def insert_question(message: Message, dialog: DialogProtocol, manager: DialogManager):
-    #     TODO:запрос в иишку определяем текст сообщения
-    manager.dialog_data['answer'] = 'Мощнейший ответ'
+    manager.dialog_data['answer'] = await get_ai_answer(message.text)
     manager.dialog_data['question'] = message.text
     await manager.next()
 
